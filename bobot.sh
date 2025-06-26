@@ -37,32 +37,43 @@ red() { echo -e "\\033[32;1m${*}\\033[0m"; }
 clear
 NUMBER_OF_CLIENTS=$(grep -c -E "^ " "/etc/passwd")
 if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
-    echo -e "\033[1;93m─────────────────────────────────────────\033[0m"
-    echo -e "\e[42m       SSH OVPN User Detail Account      \E[0m"
-    echo -e "\033[1;93m─────────────────────────────────────────\033[0m"
-    echo ""
-    echo "You have no existing clients!"
-    echo ""
-    echo -e "\033[1;93m─────────────────────────────────────────\033[0m"
-
-fi
-
 clear
-echo -e "\033[1;93m─────────────────────────────────────────\033[0m"
-echo -e "\e[42m       SSH OVPN User Detail Account      \E[0m"
-echo -e "\033[1;93m─────────────────────────────────────────\033[0m"
-if [[ -e /etc/ssh/.ssh.db ]]; then
-    NAMEUSER=$(grep -E "^ " "/etc/passwd" | cut -d ' ' -f 2 | nl -s '. ')
-    echo -e " \e[032;1mAccount Client\e[0m :"
-    echo -e "$NAMEUSER"
-    echo -e "\033[1;93m─────────────────────────────────────────\033[0m"
-fi
-read -p "Input Name Account : " user
-clear
-if [[ -e /etc/xray/log-createssh-${user}.log ]]; then
-    cat /etc/xray/log-createssh-${user}.log
-else
-    echo "You have no existing clients!"
-fi
+echo -e "$COLOR1┌─────────────────────────────────────────────────┐${NC}"
+echo -e "$COLOR1${NC} ${COLBG1}              ${WH}• DELETE USERS •                 ${NC}$COLOR1$NC"
+echo -e "$COLOR1└─────────────────────────────────────────────────┘${NC}"
+echo -e "$COLOR1┌─────────────────────────────────────────────────┐${NC}"
 echo ""
-
+echo -e " $COLOR Yahhh, Tidak Ada Username Yang Terdaftar ${NC}"
+echo ""
+echo -e "$COLOR1└─────────────────────────────────────────────────┘${NC}"
+echo ""
+read -n 1 -s -r -p "Press any key to back on menu"
+menu-ssh
+fi
+echo -e "$COLOR1┌─────────────────────────────────────────────────┐${NC}"
+echo -e "$COLOR1${NC} ${COLBG1}              ${WH}• DELETE USERS •                 ${NC}$COLOR1$NC"
+echo -e "$COLOR1└─────────────────────────────────────────────────┘${NC}"
+echo -e "$COLOR1┌─────────────────────────────────────────────────┐${NC}"
+echo ""	
+echo -e " $COLOR Pilih Nomer User Yang Akan Di Hapus ${NC}"
+echo -e " $COLOR Tekan CTRL×C Untuk Membatalkan ${NC}"
+echo -e "$COLOR1└─────────────────────────────────────────────────┘${NC}"
+grep -E "^ " "/etc/passwd" | cut -d ' ' -f 2-3 | nl -s ') '
+until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
+if [[ ${CLIENT_NUMBER} == '1' ]]; then
+read -rp "Select Number [1]: " CLIENT_NUMBER
+else
+read -rp "Select Number [1-${NUMBER_OF_CLIENTS}]: " CLIENT_NUMBER
+fi
+done
+Pengguna=$(grep -E "^ " "/etc/passwd" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
+Days=$(grep -E "^ " "/etc/passwd" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
+sed -i "/^ $Pengguna $Days/d" /etc//etc/passwd
+if getent passwd $Pengguna > /dev/null 2>&1; then
+        userdel $Pengguna > /dev/null 2>&1
+        echo -e "User $Pengguna was removed."
+else
+        echo -e "Failure: User $Pengguna Not Exist."
+fi
+read -n 1 -s -r -p "Press any key to back on menu"
+menu-ssh
